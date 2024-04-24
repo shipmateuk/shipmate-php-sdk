@@ -1,0 +1,10 @@
+*.lock
+package.xml
+/vendor
+.idea
+.php-cs-fixer.cache
+.phpbench
+.phpunit.result.cache
+.phpunit.cache
+docs/_build
+tests/clover.xml
