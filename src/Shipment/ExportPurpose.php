@@ -2,7 +2,7 @@
 
 namespace Shipmate\Shipment;
 
-use ObjectEncoder;
+use Shipmate\ObjectEncoder;
 
 class ExportPurpose extends ObjectEncoder {
 

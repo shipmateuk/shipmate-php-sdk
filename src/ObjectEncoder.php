@@ -2,6 +2,9 @@
 /**
  * This extends of all request object to convert the object to snake_case when json_encode is called
  */
+
+namespace Shipmate;
+
 class ObjectEncoder implements \JsonSerializable {
 
     /**

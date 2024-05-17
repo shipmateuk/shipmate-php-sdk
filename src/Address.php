@@ -2,7 +2,7 @@
 
 namespace Shipmate;
 
-use ObjectEncoder;
+use Shipmate\ObjectEncoder;
 
 /**
 * Address

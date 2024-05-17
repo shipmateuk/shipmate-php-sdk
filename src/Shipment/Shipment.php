@@ -4,7 +4,7 @@ namespace Shipmate\Shipment;
 
 require "ObjectEncoder.php";
 
-use ObjectEncoder;
+use Shipmate\ObjectEncoder;
 
 /**
  * Shipment

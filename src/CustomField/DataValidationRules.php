@@ -2,7 +2,7 @@
 
 namespace Shipmate\CustomField;
 
-use ObjectEncoder;
+use Shipmate\ObjectEncoder;
 
 /**
 * Data Validation Rules
