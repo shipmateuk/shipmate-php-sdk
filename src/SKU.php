@@ -15,6 +15,7 @@ class SKU extends ObjectEncoder {
 
     protected $id;
     protected $sku;
+    protected $imageUrl;
     protected $productName;
     protected $outerBarcode;
     protected $innerBarcode;
@@ -40,6 +41,7 @@ class SKU extends ObjectEncoder {
     protected $length;
     protected $depth;
     protected $hazardCodes;
+    protected $active;
     protected $isStockedItem;
     protected $inStock;
     protected $customFields;
@@ -71,6 +73,18 @@ class SKU extends ObjectEncoder {
     
     public function setSKU($sku) {
         $this->sku = $sku;
+    }
+
+    /**
+    * Set the Image Url
+    *
+    * @param string $imageUrl URL of Image of this SKU
+    *
+    * @return void 
+    **/
+
+    public function setImageUrl($imageUrl) {
+        $this->imageUrl = $imageUrl;
     }
 
     /**
@@ -374,6 +388,18 @@ class SKU extends ObjectEncoder {
     }
 
     /**
+    * Set the Active
+    *
+    * @param bool $active Whether this item is currently active in your inventory
+    *
+    * @return void 
+    **/
+    
+    public function setActive($active) {
+        $this->active = $active;
+    }
+
+    /**
     * Set the Is Stocked Item
     *
     * @param bool $isStockedItem Whether this is an item kept in stock
@@ -465,6 +491,16 @@ class SKU extends ObjectEncoder {
     
     public function sku() {
         return $this->sku;
+    }
+
+    /**
+    * Get the Image Url
+    *
+    * @return string URL of Image of this SKU
+    **/
+    
+    public function imageUrl() {
+        return $this->imageUrl;
     }
 
     /**
@@ -715,6 +751,16 @@ class SKU extends ObjectEncoder {
     
     public function hazardCodes() {
         return $this->hazardCodes;
+    }
+
+    /**
+    * Get the Active
+    *
+    * @return bool Whether this item is currently active in your inventory
+    **/
+    
+    public function active() {
+        return $this->active;
     }
 
     /**

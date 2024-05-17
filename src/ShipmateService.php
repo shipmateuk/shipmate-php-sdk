@@ -232,8 +232,6 @@ class ShipmateService {
 
         $response = curl_exec($curl); 
         
-        die(var_dump($response));
-        
         if (curl_errno($curl)) {
             throw new CurlErrorException(curl_error($curl));
         }
