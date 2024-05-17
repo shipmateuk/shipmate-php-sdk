@@ -520,9 +520,18 @@ class ShipmateService {
         // }
     
         // Country Object for CountryOfOrigin
-        $countryOfOriginObj = new Country();
-        $countryOfOriginObj = mapArrayToObject($dataArray['countryOfOrigin'], $countryOfOriginObj);
-        $newSKU->setCountryOfOrigin($countryOfOriginObj);
+
+        if ($dataArray['countryOfOrigin'] !== null) {
+
+            // Country Object for CountryOfOrigin
+            
+            $countryOfOriginObj = new Country();
+            
+            $countryOfOriginObj = mapArrayToObject($dataArray['countryOfOrigin'], $countryOfOriginObj);
+            
+            $newSKU->setCountryOfOrigin($countryOfOriginObj);
+            
+        }
         
         return $newSKU;
     }
