@@ -24,12 +24,14 @@ require 'utils/convertKeysToCamelCase.php';
 require 'utils/mapArrayToObject.php';
 require 'Environment.php';
 
+use Shipmate\Container\Container;
 use Shipmate\Exceptions\CurlErrorException;
 use Shipmate\Exceptions\BadRequestException;
 use Shipmate\Exceptions\UnauthorizedException;
 use Shipmate\Exceptions\ForbiddenException;
 use Shipmate\Exceptions\NotFoundException;
 use Shipmate\Exceptions\InternalServerErrorException;
+use Shipmate\Responses\ContainerShipmentResponse;
 use Shipmate\Responses\ShipmentResponse;
 use Shipmate\Responses\PackagingType;
 use Shipmate\Responses\PackagingOptions;
@@ -1442,7 +1444,259 @@ class ShipmateService {
 
         return $trackingEventsArray;
     }
-    
+
+    /**
+     * Create a Container
+     *
+     * @param \Shipmate\Container\Container $container Container Object
+     *
+     * @return array Container Response Objects
+     *
+     * @throws BadRequestException when response HTTP is 400
+     * @throws UnauthorizedException when response HTTP is 401
+     * @throws ForbiddenException when response HTTP is 403
+     * @throws NotFoundException when response HTTP is 404
+     * @throws InternalServerErrorException when response HTTP is 500
+     * @throws CurlErrorException when internal curl error occurs
+     **/
+
+    public function createContainer($container) {
+
+        $curl = $this->setupCurl('/containers', 'POST', json_encode($container));
+
+        $response = curl_exec($curl);
+
+        if (curl_errno($curl)) {
+            throw new CurlErrorException(curl_error($curl));
+        }
+
+        if (!curl_errno($curl)) {
+            $this->checkForResponseErrors($curl, $response);
+        }
+
+        // Decode JSON into associative array
+        $dataArray = json_decode($response, true);
+
+        $dataArray = $dataArray['data'];
+
+        $shipmentResponsesArray = [];
+
+            // Converts keys of the array to camelCase
+            $containerResponse = convertKeysToCamelCase($dataArray);
+
+            $newContainerResponse = new ContainerShipmentResponse();
+
+            // Map top layer properties of array to object
+            $newContainerResponse = mapArrayToObject($containerResponse, $newContainerResponse);
+
+            $shipmentResponsesArray[] = $newContainerResponse;
+
+        return $shipmentResponsesArray;
+    }
+
+    /**
+     * Get Single Container
+     *
+     * @param string $reference either the container's ID or reference.
+     *
+     * @return \Shipmate\Container\Container Specified Container
+     *
+     * @throws BadRequestException when response HTTP is 400
+     * @throws UnauthorizedException when response HTTP is 401
+     * @throws ForbiddenException when response HTTP is 403
+     * @throws NotFoundException when response HTTP is 404
+     * @throws InternalServerErrorException when response HTTP is 500
+     * @throws CurlErrorException when internal curl error occurs
+     **/
+
+    public function getContainer($reference) {
+
+        $curl = $this->setupCurl("/containers/$reference", 'GET');
+
+        $response = curl_exec($curl);
+
+        if (curl_errno($curl)) {
+            throw new CurlErrorException(curl_error($curl));
+        }
+
+        if (!curl_errno($curl)) {
+            $this->checkForResponseErrors($curl, $response);
+        }
+
+        // Decode JSON into associative array
+        $dataArray = json_decode($response, true);
+
+        // Access value of "data" (i.e the returned Object)
+        $dataArray = $dataArray["data"];
+
+        // Convert keys of the array to camelCase
+        $dataArray = convertKeysToCamelCase($dataArray);
+
+        $containerObj = new Container();
+
+        // Map top layer properties of array to object
+        $containerObj = mapArrayToObject($dataArray, $containerObj);
+
+        return $containerObj;
+    }
+
+    /**
+     * Get Container Label
+     *
+     * @param string $reference Carrier's Tracking Reference
+     * @param string $format The format that the label should be returned in, either PDF, ZPL or PNG
+     *
+     * @return \Shipmate\Label A label along with both Shipment and Parcel data
+     *
+     * @throws BadRequestException when response HTTP is 400
+     * @throws UnauthorizedException when response HTTP is 401
+     * @throws ForbiddenException when response HTTP is 403
+     * @throws NotFoundException when response HTTP is 404
+     * @throws InternalServerErrorException when response HTTP is 500
+     * @throws CurlErrorException when internal curl error occurs
+     **/
+
+    public function getContainerLabel($reference, $format = "ZPL") {
+
+        $curl = $this->setupCurl("/containers/$reference/label?format=$format", 'GET');
+
+        $response = curl_exec($curl);
+
+        if (curl_errno($curl)) {
+            throw new CurlErrorException(curl_error($curl));
+        }
+
+        if (!curl_errno($curl)) {
+            $this->checkForResponseErrors($curl, $response);
+        }
+
+        // Decode JSON into associative array
+        $dataArray = json_decode($response, true);
+
+        // Access value of "data" (i.e the returned Object)
+        $dataArray = $dataArray["data"][0];
+
+        // Convert keys of the array to camelCase
+        $dataArray = convertKeysToCamelCase($dataArray);
+
+        $labelObj = new Label();
+
+        // Map top layer properties of array to object
+        $labelObj = mapArrayToObject($dataArray, $labelObj);
+
+        // Handle nested objects
+        // Address Object
+        $addressObj = new Address();
+        $addressObj = mapArrayToObject($dataArray['toAddress'], $addressObj);
+        $addressObj->setName($dataArray['toAddress']['deliveryName']);
+        $labelObj->setToAddress($addressObj);
+
+        return $labelObj;
+    }
+
+    /**
+     * Get Container Commercial Invoice
+     *
+     * @param string $reference Carrier's Tracking Reference
+     * @param string $format The format that the label should be returned in, either PDF, ZPL or PNG
+     *
+     * @return \Shipmate\Label A label along with both Shipment and Parcel data
+     *
+     * @throws BadRequestException when response HTTP is 400
+     * @throws UnauthorizedException when response HTTP is 401
+     * @throws ForbiddenException when response HTTP is 403
+     * @throws NotFoundException when response HTTP is 404
+     * @throws InternalServerErrorException when response HTTP is 500
+     * @throws CurlErrorException when internal curl error occurs
+     **/
+
+    public function getContainerCommercialInvoice($reference) {
+
+        $curl = $this->setupCurl("/containers/$reference/commercial-invoice", 'GET');
+
+        $response = curl_exec($curl);
+
+        if (curl_errno($curl)) {
+            throw new CurlErrorException(curl_error($curl));
+        }
+
+        if (!curl_errno($curl)) {
+            $this->checkForResponseErrors($curl, $response);
+        }
+
+        // Decode JSON into associative array
+        $dataArray = json_decode($response, true);
+
+        // Access value of "data" (i.e the returned Object)
+        $dataArray = $dataArray["data"][0];
+
+        // Convert keys of the array to camelCase
+        $dataArray = convertKeysToCamelCase($dataArray);
+
+        $labelObj = new Label();
+
+        // Map top layer properties of array to object
+        $labelObj = mapArrayToObject($dataArray, $labelObj);
+
+        // Handle nested objects
+        // Address Object
+        $addressObj = new Address();
+        $addressObj = mapArrayToObject($dataArray['toAddress'], $addressObj);
+        $addressObj->setName($dataArray['toAddress']['deliveryName']);
+        $labelObj->setToAddress($addressObj);
+
+        return $labelObj;
+    }
+
+    /**
+     * Get Container Shipments
+     *
+     * @param string $reference Carrier's Tracking Reference
+     * @param string $format The format that the label should be returned in, either PDF, ZPL or PNG
+     *
+     * @return \Shipmate\Container\Container A label along with both Shipment and Parcel data
+     *
+     * @throws BadRequestException when response HTTP is 400
+     * @throws UnauthorizedException when response HTTP is 401
+     * @throws ForbiddenException when response HTTP is 403
+     * @throws NotFoundException when response HTTP is 404
+     * @throws InternalServerErrorException when response HTTP is 500
+     * @throws CurlErrorException when internal curl error occurs
+     **/
+
+    public function getContainerShipments($reference) {
+
+        $curl = $this->setupCurl("/containers/$reference/shipments", 'GET');
+
+        $response = curl_exec($curl);
+
+        if (curl_errno($curl)) {
+            throw new CurlErrorException(curl_error($curl));
+        }
+
+        if (!curl_errno($curl)) {
+            $this->checkForResponseErrors($curl, $response);
+        }
+
+        // Decode JSON into associative array
+        $dataArray = json_decode($response, true);
+
+        // Access value of "data" (i.e the returned Object)
+        $dataArray = $dataArray["data"][0];
+
+        // Convert keys of the array to camelCase
+        $dataArray = convertKeysToCamelCase($dataArray);
+
+        $containerObj = new Container();
+
+        // Map top layer properties of array to object
+        $containerObj = mapArrayToObject($dataArray, $containerObj);
+
+
+        return $containerObj;
+    }
+
+
     private function checkForResponseErrors($curl, $response)
     {
         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);

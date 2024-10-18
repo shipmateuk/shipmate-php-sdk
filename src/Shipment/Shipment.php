@@ -22,6 +22,7 @@ class Shipment extends ObjectEncoder {
     protected $toAddress;
     protected $parcels;
     protected $deliveryInstructions;
+    protected $containerReference;
     protected $customFields;
     protected $customsDeclaration;
     protected $recipientVatNumber;
@@ -380,6 +381,28 @@ class Shipment extends ObjectEncoder {
     
     public function printToUser() {
         return $this->printToUser;
+    }
+
+    /**
+     * Get the Container Reference
+     *
+     * @return string The container reference or number given to your customer. May be added to parcel labels and does not need to be unique.
+     **/
+
+    public function containerReference() {
+        return $this->orderReference;
+    }
+
+    /**
+     * Set the Container Reference
+     *
+     * @param string $containerReference The container reference to add the shipment
+     *
+     * @return void
+     **/
+
+    public function setContainerReference($containerReference) {
+        $this->containerReference = $containerReference;
     }
 
 }
